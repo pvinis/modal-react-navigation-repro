@@ -1,114 +1,106 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow
- */
+import React, { useContext, useState } from 'react'
+import { View, Button, Text } from 'react-native'
+import { createStackNavigator } from '@react-navigation/stack'
+import { NavigationContainer, useNavigation } from '@react-navigation/native'
 
-import React from 'react';
-import {
-  SafeAreaView,
-  StyleSheet,
-  ScrollView,
-  View,
-  Text,
-  StatusBar,
-} from 'react-native';
 
-import {
-  Header,
-  LearnMoreLinks,
-  Colors,
-  DebugInstructions,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+const AuthContext = React.createContext(false)
 
-const App: () => React$Node = () => {
-  return (
-    <>
-      <StatusBar barStyle="dark-content" />
-      <SafeAreaView>
-        <ScrollView
-          contentInsetAdjustmentBehavior="automatic"
-          style={styles.scrollView}>
-          <Header />
-          {global.HermesInternal == null ? null : (
-            <View style={styles.engine}>
-              <Text style={styles.footer}>Engine: Hermes</Text>
-            </View>
-          )}
-          <View style={styles.body}>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Step One</Text>
-              <Text style={styles.sectionDescription}>
-                Edit <Text style={styles.highlight}>App.js</Text> to change this
-                screen and then come back to see your edits.
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>See Your Changes</Text>
-              <Text style={styles.sectionDescription}>
-                <ReloadInstructions />
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Debug</Text>
-              <Text style={styles.sectionDescription}>
-                <DebugInstructions />
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Learn More</Text>
-              <Text style={styles.sectionDescription}>
-                Read the docs to discover what to do next:
-              </Text>
-            </View>
-            <LearnMoreLinks />
-          </View>
-        </ScrollView>
-      </SafeAreaView>
-    </>
-  );
-};
+const Onboarding = () => {
+	const navigation = useNavigation()
 
-const styles = StyleSheet.create({
-  scrollView: {
-    backgroundColor: Colors.lighter,
-  },
-  engine: {
-    position: 'absolute',
-    right: 0,
-  },
-  body: {
-    backgroundColor: Colors.white,
-  },
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: Colors.black,
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-    color: Colors.dark,
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-  footer: {
-    color: Colors.dark,
-    fontSize: 12,
-    fontWeight: '600',
-    padding: 4,
-    paddingRight: 12,
-    textAlign: 'right',
-  },
-});
+	return (
+		<View style={{ flex: 1 }}>
+			<Text>Onboarding</Text>
+			<Button title='go to log in' onPress={() => navigation.navigate('login')} />
+		</View>
+	)
+}
 
-export default App;
+const Login = () => {
+	const { setLoggedIn } = useContext(AuthContext)
+
+	return (
+		<View style={{ flex: 1 }}>
+			<Text>Login</Text>
+			<Button title='log in' onPress={() => setLoggedIn(true)} />
+		</View>
+	)
+}
+
+const AStack = createStackNavigator()
+const AuthStack = () => (
+	<AStack.Navigator>
+		<AStack.Screen name='onboarding' component={Onboarding} />
+		<AStack.Screen name='login' component={Login} />
+	</AStack.Navigator>
+)
+
+const Something = () => {
+	return (
+		<View style={{ flex: 1 }}>
+			<Text>Something</Text>
+		</View>
+	)
+}
+
+const Home = () => {
+	const navigation = useNavigation()
+	const { setLoggedIn } = useContext(AuthContext)
+
+	return (
+		<View style={{ flex: 1 }}>
+			<Text>Home</Text>
+			<Button title='go to something' onPress={() => navigation.navigate('something')} />
+			<Button title='go to modal' onPress={() => navigation.navigate('modal')} />
+			<Button title='log out' onPress={() => setLoggedIn(false)} />
+		</View>
+	)
+}
+
+const MStack = createStackNavigator()
+const MainStack = () => (
+	<MStack.Navigator>
+		<MStack.Screen name='home' component={Home} />
+		<MStack.Screen name='something' component={Something} />
+	</MStack.Navigator>
+)
+
+const Modal = () => {
+	const navigation = useNavigation()
+
+	return (
+		<View style={{ flex: 1, marginTop: 60 }}>
+			<Text>I am the Modal</Text>
+			<Button title='close' onPress={() => navigation.goBack()} />
+		</View>
+	)
+}
+
+const MMStack = createStackNavigator()
+const MainStackWithModal = () => (
+	<MMStack.Navigator mode='modal' headerMode='none' >
+		<MMStack.Screen name='mainstack' component={MainStack} />
+		<MMStack.Screen name='modal' component={Modal} />
+	</MMStack.Navigator>
+)
+
+const MainApp = () => {
+	const { loggedIn } = useContext(AuthContext)
+
+	return loggedIn
+		? <MainStackWithModal />
+		: <AuthStack />
+}
+
+const App = () => {
+	const [loggedIn, setLoggedIn] = useState(false)
+	return (
+		<AuthContext.Provider value={{ loggedIn, setLoggedIn }}>
+			<NavigationContainer>
+				<MainApp />
+			</NavigationContainer>
+		</AuthContext.Provider>
+	);
+}
+export default App
