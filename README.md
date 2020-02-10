@@ -9,6 +9,6 @@ Now we add a stack with modal that goes before the `MainStack`, as the documenta
 When we log in, the next screen comes as a modal! This is not what we want. The `Home` screen should appear as a normal stack screen, and only the `Modal` should appear as a modal screen. Is this a bug with the library, a restriction of the library, or just a case that is not considered?
 
 Gif:
-
+![Screen Recording 2020-02-10 at 18.25.29.gif](Screen Recording 2020-02-10 at 18.25.29.gif)
 
 In general, I am finding the library to be hard to work with modals. Mostly with modals that need to have a stack inside them, and multiple modals at the same time.
